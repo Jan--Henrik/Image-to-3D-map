@@ -33,3 +33,8 @@ warning:
     the fps go down by increasing the resolution
     it runns on Java
     (╯°□°）╯︵ ┻━┻
+
+test images:
+
+    http://img5.fotos-hochladen.net/uploads/input2ilqvd5zwc.jpg
+    
