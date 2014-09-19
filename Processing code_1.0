@@ -1,0 +1,124 @@
+//make a 3D image with boxes out of a 2D image
+//with DFX output, press 'r' ( for start recording the dxf, it will end automatically and show it to you in the console) for more help, read the readme or press h
+//
+//by Jan Henrik http://electronics.janhenrik.org
+
+import nervoussystem.obj.*;        //lib for export .obj
+
+boolean record;    //need that to write an STL
+
+PImage img;       // The source image
+
+int cellsize = 16; // Dimensions of each cell in the grid  (change if you want a different startup res. use 1,2,4,8,16,32)
+int cols, rows;   // Number of columns and rows in our system  (dont change!)
+float z = 0;  //int z...   (dont change)
+
+boolean firststartup = true;     //message on first start
+
+int invert = 1;                  //variable to invert the image (dont change!)
+
+void setup() {
+
+
+  img = loadImage( "input.jpg" ); // Load the image
+  size(img.width, img.height, P3D);
+  cols = width/cellsize;              // Calculate # of columns
+  rows = height/cellsize;             // Calculate # of rows
+
+  if ( firststartup == true ) {       //help message on startup
+    message();
+    firststartup = false;
+  }
+}
+
+void draw() {
+  background(0);
+  img.loadPixels();
+
+  if (record) {                                    //start to record a .obj
+    beginRecord("nervoussystem.obj.OBJExport", "OBJ_Output.obj");
+  }
+  pushMatrix();                                 //we will add a box to the botton layer, it will be easier to print then!
+  translate((width/2), (height/2), -101);         //maybe it sticks out, it depends on the resolution (full = best! ;)  )
+  fill(100);                                        //just cut the edges with a cutter!
+  box(width, height, 2);
+  popMatrix();
+
+  // Begin loop for columns
+  for (int i = 0; i < cols; i++ ) {                  //start "scanning the colls
+    // Begin loop for rows
+      for (int j = 0; j < rows; j++ ) {               //now the rows
+        int x = i*cellsize + cellsize/2; // x position
+        int y = j*cellsize + cellsize/2; // y position
+        int loc = x + y*width;           // Pixel array location
+        color c = img.pixels[loc];       // Grab the color
+  
+        if ( invert == 0 ) {
+          // Calculate a box height position as a function of mouseX and pixel brightness
+          z = ((mouseX/(float)width) * brightness(img.pixels[loc]))/2;
+        } else if ( invert == 1 ) {
+          // Calculate a box height position as a function of mouseX and pixel darkness
+          z = ((mouseX/(float)width) * ( 255-brightness(img.pixels[loc] )))/2;
+        }
+  
+        // Translate to the location, set fill and stroke, and draw a box
+        pushMatrix();
+        translate(x, y, (-100+(z/2))); 
+        fill(c);
+        noStroke();
+        box(cellsize, cellsize, z);
+        popMatrix();
+      }
+  }
+
+  if (record) {                                  //end the record and take a picture
+    save("Output_Picture.jpg");
+    endRecord();
+    record = false;
+    println(" ");
+    println("done");
+  }
+}
+
+void keyPressed() {
+  // Use a key press so that it doesn´t make tonnsofthings
+  if (key == 's'|| key == 'S') {                            //record key
+    record = true;
+    println(" ");
+    println("Starting, it may take a while!");
+  } else if (key == '+' && cellsize != 1) {                    //add pixels
+    cellsize = cellsize/2;
+    println(" ");
+    println("Cellsize =  " + cellsize + " * " + cellsize);
+    setup();                                            //reload everything
+  } else if (key == '-' ) {                                  //remove them
+    cellsize = cellsize*2;
+    println(" ");
+    println("Cellsize = " + cellsize + " * " + cellsize);
+    setup();                                          //reload everything
+  } else if (key == 'h' ) {                          //print the help
+    message();
+  } else if (key == 'i' && invert == 0 ) {            //invert image
+    invert = 1;
+    println(" ");
+    println("not inverting image");
+    setup();
+  } else if (key == 'i' && invert == 1 ) {             //remove invertion
+    invert = 0;
+    println(" ");
+    println("inverting image");
+    setup();
+  }
+}
+
+void message() {                        //help message press h
+
+  println(" ");
+  println("press s or S = Save - Start to record a .dxf and a .jpg");
+  println("press + = add pixel, The resolution will rise, but the Frame rate will drop");
+  println("press - = remove pixel, The resolution will go down, the Frame rate will go up");
+  println("press i to invert the mapping technic (change from Brightness to Darkness)");
+  println("press h to read that again :) ");
+  println(" ");
+  println("dont worry, if you press a key, it will happen but maybe take some time");
+}
