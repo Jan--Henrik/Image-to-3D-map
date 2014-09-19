@@ -26,3 +26,10 @@ library(s):
 
     nervoussystem.obj
 
+warning:
+
+    it may creates some very huge files
+    if you press a key, the funktion will happen, it may take time
+    the fps go down by increasing the resolution
+    it runns on Java
+    (╯°□°）╯︵ ┻━┻
