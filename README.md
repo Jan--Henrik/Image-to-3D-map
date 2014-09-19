@@ -12,17 +12,17 @@ Your input file has to be declared as "input.jpg" and should have a smaller reso
 
 Controls:
 
-+ / -  change resolution
-i      invert image/effect
-s      save a .stl and .jpg
-h      help
+    + / -  change resolution
+    i      invert image/effect
+    s      save a .stl and .jpg
+    h      help
 
 
 intput file:
 
-"input.jpg"
+    "input.jpg"
 
 library(s):
 
-nervoussystem.obj
+    nervoussystem.obj
 
