@@ -37,4 +37,11 @@ warning:
 test images:
 
     http://img5.fotos-hochladen.net/uploads/input2ilqvd5zwc.jpg
+
+Optimal Blender settings ( to print it ):
+
+    Rotate it, that it lays down
+    move to 0,0,0
+    set prescaler to 0.2
+    export as .stl
     
