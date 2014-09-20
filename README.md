@@ -6,7 +6,7 @@ This is a processing code, to create a 3D printable 3D map out of an image, usin
 
 --Readme--
 
-Hi, I wrote this code, to create 3D maps from normal images. The program uses the bright/darkness of a pixel and the mouse position ( X ) to create a 3D map. the resolution can be changed by using the + and - key on your keyboard. When you press i , it will invert the image/3D effect. Press h to get help ( in the console ) and s to safe a .stl and a .jpg file.
+Hi, I wrote this code, to create 3D maps from normal images. The program uses the bright/darkness of a pixel and the mouse position ( X ) to create a 3D map. the resolution can be changed by using the + and - key on your keyboard. When you press i , it will invert the image/3D effect. Press h to get help ( in the console ) and s to safe a .obj and a .jpg file.
 
 Your input file has to be declared as "input.jpg" and should have a smaller resolution then your desktop (otherwise its hard to control it and the files get too big).
 
@@ -14,7 +14,7 @@ Controls:
 
     + / -  change resolution
     i      invert image/effect
-    s      save a .stl and .jpg
+    s      save a .obj and .jpg
     h      help
 
 
