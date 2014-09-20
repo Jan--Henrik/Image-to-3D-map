@@ -5,23 +5,23 @@
 
 import nervoussystem.obj.*;        //lib for export .obj
 
-boolean record;    //need that to write an STL
-
 PImage img;       // The source image
 
 int cellsize = 16; // Dimensions of each cell in the grid  (change if you want a different startup res. use 1,2,4,8,16,32)
 int cols, rows;   // Number of columns and rows in our system  (dont change!)
+int invert = 1;                  //variable to invert the image (dont change!)
+
 float z = 0;  //int z...   (dont change)
 
 boolean firststartup = true;     //message on first start
-
-int invert = 1;                  //variable to invert the image (dont change!)
+boolean record;    //need that to write an STL
 
 void setup() {
 
-
   img = loadImage( "input.jpg" ); // Load the image
-  size(img.width, img.height, P3D);
+  
+  size(img.width, img.height, P3D); //open at img size
+  
   cols = width/cellsize;              // Calculate # of columns
   rows = height/cellsize;             // Calculate # of rows
 
@@ -29,15 +29,18 @@ void setup() {
     message();
     firststartup = false;
   }
+  
 }
 
 void draw() {
+
   background(0);
   img.loadPixels();
 
   if (record) {                                    //start to record a .obj
     beginRecord("nervoussystem.obj.OBJExport", "OBJ_Output.obj");
   }
+  
   pushMatrix();                                 //we will add a box to the botton layer, it will be easier to print then!
   translate((width/2), (height/2), -101);         //maybe it sticks out, it depends on the resolution (full = best! ;)  )
   fill(100);                                        //just cut the edges with a cutter!
@@ -48,6 +51,7 @@ void draw() {
   for (int i = 0; i < cols; i++ ) {                  //start "scanning the colls
     // Begin loop for rows
       for (int j = 0; j < rows; j++ ) {               //now the rows
+      
         int x = i*cellsize + cellsize/2; // x position
         int y = j*cellsize + cellsize/2; // y position
         int loc = x + y*width;           // Pixel array location
@@ -55,10 +59,10 @@ void draw() {
   
         if ( invert == 0 ) {
           // Calculate a box height position as a function of mouseX and pixel brightness
-          z = ((mouseX/(float)width) * brightness(img.pixels[loc]))/2;
+          z = ((mouseX/(float)width) * brightness(img.pixels[loc]))/3;
         } else if ( invert == 1 ) {
           // Calculate a box height position as a function of mouseX and pixel darkness
-          z = ((mouseX/(float)width) * ( 255-brightness(img.pixels[loc] )))/2;
+          z = ((mouseX/(float)width) * ( 255-brightness(img.pixels[loc] )))/3;
         }
   
         // Translate to the location, set fill and stroke, and draw a box
