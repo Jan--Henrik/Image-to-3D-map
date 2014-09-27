@@ -3,79 +3,95 @@
 //
 //by Jan Henrik http://electronics.janhenrik.org
 
-import nervoussystem.obj.*;        //lib for export .obj
+import nervoussystem.obj.*; //lib for export .obj
 
-PImage img;       // The source image
+PImage img; // The source image
 
-int cellsize = 16; // Dimensions of each cell in the grid  (change if you want a different startup res. use 1,2,4,8,16,32)
-int cols, rows;   // Number of columns and rows in our system  (dont change!)
-int invert = 1;                  //variable to invert the image (dont change!)
+int cellsize = 16; // Dimensions of each cell in the grid (change if you want a different startup res. use 1,2,4,8,16,32)
+int cols, rows; // Number of columns and rows in our system (dont change!)
+int invert = 1; //variable to invert the image (dont change!)
 
-float z = 0;  //int z...   (dont change)
+float z = 0; //int z... (dont change)
+float heightz = 0; //for printing the z position
+float avarangez = 0;
 
-boolean firststartup = true;     //message on first start
-boolean record;    //need that to write an STL
+boolean firststartup = true; //message on first start
+boolean record; //need that to write an STL
 
 void setup() {
-
   img = loadImage( "input.jpg" ); // Load the image
-  
-  size(img.width, img.height, P3D); //open at img size
-  
-  cols = width/cellsize;              // Calculate # of columns
-  rows = height/cellsize;             // Calculate # of rows
 
-  if ( firststartup == true ) {       //help message on startup
+    size(img.width, img.height, P3D); //open at img size
+
+  cols = width/cellsize; // Calculate # of columns
+  rows = height/cellsize; // Calculate # of rows
+
+  if ( firststartup == true ) { //help message on startup
     message();
     firststartup = false;
   }
-  
 }
-
 void draw() {
-
   background(0);
   img.loadPixels();
 
-  if (record) {                                    //start to record a .obj
+  if (record) { //start to record a .obj
     beginRecord("nervoussystem.obj.OBJExport", "OBJ_Output.obj");
   }
-  
-  pushMatrix();                                 //we will add a box to the botton layer, it will be easier to print then!
-  translate((width/2), (height/2), -101);         //maybe it sticks out, it depends on the resolution (full = best! ;)  )
-  fill(100);                                        //just cut the edges with a cutter!
-  box(width, height, 2);
-  popMatrix();
-
+  /*
+  //Bottom Layer, when added the 3D print will be sinmpler to print, beacuse the lowest layer will be a plate
+   pushMatrix(); //we will add a box to the botton layer, it will be easier to print then!
+   translate((width/2), (height/2), -101); //maybe it sticks out, it depends on the resolution (full = best! ;) )
+   fill(100); //just cut the edges with a cutter!
+   box(width, height, 2);
+   popMatrix();
+   */
   // Begin loop for columns
-  for (int i = 0; i < cols; i++ ) {                  //start "scanning the colls
+  for (int i = 0; i < cols; i++ ) { //start "scanning the colls
     // Begin loop for rows
-      for (int j = 0; j < rows; j++ ) {               //now the rows
-      
-        int x = i*cellsize + cellsize/2; // x position
-        int y = j*cellsize + cellsize/2; // y position
-        int loc = x + y*width;           // Pixel array location
-        color c = img.pixels[loc];       // Grab the color
-  
-        if ( invert == 0 ) {
-          // Calculate a box height position as a function of mouseX and pixel brightness
-          z = ((mouseX/(float)width) * brightness(img.pixels[loc]))/3;
-        } else if ( invert == 1 ) {
-          // Calculate a box height position as a function of mouseX and pixel darkness
-          z = ((mouseX/(float)width) * ( 255-brightness(img.pixels[loc] )))/3;
-        }
-  
-        // Translate to the location, set fill and stroke, and draw a box
-        pushMatrix();
-        translate(x, y, (-100+(z/2))); 
-        fill(c);
-        noStroke();
-        box(cellsize, cellsize, z);
-        popMatrix();
+    for (int j = 0; j < rows; j++ ) { //now the rows
+      int x = i*cellsize + cellsize/2; // x position
+      int y = j*cellsize + cellsize/2; // y position
+      int loc = x + y*width; // Pixel array location
+      color c = img.pixels[loc]; // Grab the color
+      if ( invert == 0 ) {
+        // Calculate a box height position as a function of mouseX and pixel brightness
+        z = ((mouseX/(float)width) * brightness(img.pixels[loc]))/3;
+      } else if ( invert == 1 ) {
+        // Calculate a box height position as a function of mouseX and pixel darkness
+        z = ((mouseX/(float)width) * ( 255-brightness(img.pixels[loc] )))/3;
       }
+
+      avarangez = (avarangez + z) /2;    //calculate avarange height
+
+      if (z > heightz) {      //measure max height
+        heightz = z;
+      }
+      
+      // Translate to the location, set fill and stroke, and draw a box
+      pushMatrix();
+      translate(x, y, (-100+(z/2)));
+      fill(c);
+      noStroke();
+      box(cellsize, cellsize, z);
+      popMatrix();
+    }
+
+    //print max height
+    print("Max height = ");      
+    print(heightz);
+    println(" mm");
+    heightz = 0;
+
+    //print avarange height
+    print("Avarange height = ");      
+    print(avarangez);
+    println(" mm");
+    avarangez = 0;
   }
 
-  if (record) {                                  //end the record and take a picture
+  //end the record and take a picture
+  if (record) { 
     save("Output_Picture.jpg");
     endRecord();
     record = false;
@@ -83,40 +99,37 @@ void draw() {
     println("done");
   }
 }
-
 void keyPressed() {
   // Use a key press so that it doesn´t make tonnsofthings
-  if (key == 's'|| key == 'S') {                            //record key
+  if (key == 's'|| key == 'S') { //record key
     record = true;
     println(" ");
     println("Starting, it may take a while!");
-  } else if (key == '+' && cellsize != 1) {                    //add pixels
+  } else if (key == '+' && cellsize != 1) { //add pixels
     cellsize = cellsize/2;
     println(" ");
-    println("Cellsize =  " + cellsize + " * " + cellsize);
-    setup();                                            //reload everything
-  } else if (key == '-' ) {                                  //remove them
+    println("Cellsize = " + cellsize + " * " + cellsize);
+    setup(); //reload everything
+  } else if (key == '-' ) { //remove them
     cellsize = cellsize*2;
     println(" ");
     println("Cellsize = " + cellsize + " * " + cellsize);
-    setup();                                          //reload everything
-  } else if (key == 'h' ) {                          //print the help
+    setup(); //reload everything
+  } else if (key == 'h' ) { //print the help
     message();
-  } else if (key == 'i' && invert == 0 ) {            //invert image
+  } else if (key == 'i' && invert == 0 ) { //invert image
     invert = 1;
     println(" ");
     println("not inverting image");
     setup();
-  } else if (key == 'i' && invert == 1 ) {             //remove invertion
+  } else if (key == 'i' && invert == 1 ) { //remove invertion
     invert = 0;
     println(" ");
     println("inverting image");
     setup();
   }
 }
-
-void message() {                        //help message press h
-
+void message() { //help message press h
   println(" ");
   println("press s or S = Save - Start to record a .dxf and a .jpg");
   println("press + = add pixel, The resolution will rise, but the Frame rate will drop");
@@ -126,3 +139,4 @@ void message() {                        //help message press h
   println(" ");
   println("dont worry, if you press a key, it will happen but maybe take some time");
 }
+
