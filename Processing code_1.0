@@ -76,20 +76,19 @@ void draw() {
       box(cellsize, cellsize, z);
       popMatrix();
     }
-
-    //print max height
-    print("Max height = ");      
-    print(heightz);
-    println(" mm");
-    heightz = 0;
-
-    //print avarange height
-    print("Avarange height = ");      
-    print(avarangez);
-    println(" mm");
-    avarangez = 0;
   }
+  //print max height
+  print("Max height = ");          
+  print(heightz);
+  println(" mm");
+  heightz = 0;
 
+  //print avarange height
+  print("Avarange height = ");      
+  print(avarangez);
+  println(" mm");
+  avarangez = 0;
+    
   //end the record and take a picture
   if (record) { 
     save("Output_Picture.jpg");
